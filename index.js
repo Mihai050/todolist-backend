@@ -21,40 +21,43 @@ async function connectToDatabase() {
 
 connectToDatabase();
 
-// .then(async () => {
-// const testTask = new Task({
-//       title: 'Test Task',
-//       description: 'This is a test task.',
-//       taskType: 'Hobby',
-//       status: 'Pending',
-//       deadline: new Date('2023-08-31'),
-//     });
 
-//     await testTask.save();
-//     console.log('Test task saved successfully');
-// });
-
-
-app.get('/api/add-task', (req, res) => {
+app.get('/api/add-task', async (req, res) => {
   // TODO - CREATE A TASK HERE
+  const {title, description, taskType, status, deadline} = req.body;
+  const newTask = new Task({
+      title: title,
+      description: description,
+      taskType: taskType,
+      status: status,
+      deadline: new Date(deadline),
+    })
+
+    try {
+        await newTask.save();
+        res.sendStatus(200);
+    } catch (err) {
+        console.error("Error:", error);
+        res.sendStatus(500);
+    }
 })
 
-app.get("/api/delete-task/:taskId", (req, res) => {
+app.get("/api/delete-task/:taskId", async (req, res) => {
     const taskId = req.params.taskId;
   // TODO - DELETE A TASK HERE
 });
 
-app.get("/api/edit-task/:taskId", (req, res) => {
+app.get("/api/edit-task/:taskId", async (req, res) => {
     const taskId = req.params.taskId;
   // TODO - DELETE A TASK HERE
 });
 
-app.get("/api/complete-task/:taskId", (req, res) => {
+app.get("/api/complete-task/:taskId", async (req, res) => {
     const taskId = req.params.taskId;
   // TODO - DELETE A TASK HERE
 });
 
-app.get("/api/revert-task/:taskId", (req, res) => {
+app.get("/api/revert-task/:taskId", async (req, res) => {
     const taskId = req.params.taskId;
   // TODO - REVERT A TASK HERE
 });
