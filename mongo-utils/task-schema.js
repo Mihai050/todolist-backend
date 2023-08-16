@@ -9,6 +9,11 @@ const taskSchema = new mongoose.Schema({
     default: Date.now,
   },
   type: String,
+  estimatedTime: Number,
+  completionTime: {
+    type: String,
+    default: null,
+  },
   status: { 
     type: String, 
     default: "Active" },

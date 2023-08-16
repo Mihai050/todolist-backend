@@ -8,7 +8,12 @@ require("dotenv").config();
 const dbString = process.env.DB_STRING;
 const Task = require("./mongo-utils/task-schema.js");
 
-app.use(cors());
+app.use(
+  cors({
+    origin: "http://localhost:3000",
+  })
+);
+app.use(express.json());
 
 async function connectToDatabase() {
   try {
@@ -21,10 +26,11 @@ async function connectToDatabase() {
 
 connectToDatabase();
 
-app.get("/api/add-task", async (req, res) => {
-  const { title, description, taskType, deadline } = req.body;
+app.post("/api/add-task", async (req, res) => {
+  const { title, description, taskType, deadline, estimatedTime } = req.body;
   const newTask = new Task({
     title: title,
+    estimatedTime: estimatedTime,
     description: description,
     taskType: taskType,
     deadline: new Date(deadline),
@@ -34,17 +40,23 @@ app.get("/api/add-task", async (req, res) => {
     await newTask.save();
     res.sendStatus(200);
   } catch (err) {
-    console.error("Error:", error);
+    console.error("Error:", err);
     res.sendStatus(500);
   }
 });
 
-app.get("/api/get-tasks/:taskId", async (req, res) => {
+app.get("/api/get-task/:taskId", async (req, res) => {
+  console.log(req.params.taskId);
   const taskId = req.params.taskId;
-  const task = await Task.findOne({ _id: taskId });
-  res.send(task);
-});
+  try{  
+    const task = await Task.findOne({ _id: taskId });
+    res.send(task);
+  } catch (err) {
+    console.error("Error:", err);
+    res.sendStatus(500);
+  }
 
+});
 
 
 app.get("/api/get-active-tasks", async (req, res) => {
@@ -87,6 +99,11 @@ app.get("/api/revert-task/:taskId", async (req, res) => {
   // TODO - REVERT A TASK HERE
 });
 
+app.get("/api/sanitycheck", (req, res) => {
+  res.sendStatus(200);
+} )
+
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
+  console.log(`localhost:${port}/api/sanitycheck`);
 });
