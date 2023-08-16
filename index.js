@@ -39,6 +39,14 @@ app.get("/api/add-task", async (req, res) => {
   }
 });
 
+app.get("/api/get-tasks/:taskId", async (req, res) => {
+  const taskId = req.params.taskId;
+  const task = await Task.findOne({ _id: taskId });
+  res.send(task);
+});
+
+
+
 app.get("/api/get-active-tasks", async (req, res) => {
   const activeTasks = await Task.find({status: "Active"}).lean();
   res.send(activeTasks);
