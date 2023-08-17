@@ -71,7 +71,13 @@ app.get("/api/get-inactive-tasks", async (req, res) => {
 
 app.get("/api/delete-task/:taskId", async (req, res) => {
   const taskId = req.params.taskId;
-  console.log("Deleting task" + taskId);
+
+  const deletedTask = await Task.findOne({ _id: taskId });
+  if (deletedTask.status === "Inactive") {
+    res.sendStatus(500);
+  }
+  
+  
   try {
     await Task.deleteOne({ _id: taskId });
     res.sendStatus(200);
@@ -84,6 +90,9 @@ app.get("/api/edit-task/:taskId", async (req, res) => {
   const taskId = req.params.taskId;
   const newDescription = req.body.description;
   const editedTask = await Task.findOne({ _id: taskId });
+  if (editedTask.status === "Inactive") {
+    res.sendStatus(500);
+  }
   editedTask.description = newDescription;
 
   try {
@@ -95,11 +104,13 @@ app.get("/api/edit-task/:taskId", async (req, res) => {
 });
 
 app.get("/api/complete-task/:taskId/:time", async (req, res) => {
-  console.log('completing task')
   const taskId = req.params.taskId;
   const time = req.params.time;
 
   const endedTask = await Task.findOne({ _id: taskId });
+  if(ended.status === "Inactive"){
+    res.sendStatus(500);
+  }
   endedTask.status = 'Inactive';
   endedTask.completionTime = time;
   endedTask.finishedAt = new Date();
@@ -114,7 +125,7 @@ app.get("/api/complete-task/:taskId/:time", async (req, res) => {
 
 app.get("/api/revert-task/:taskId", async (req, res) => {
   const taskId = req.params.taskId;
-  // TODO - REVERT A TASK HERE
+  // TODO - REVERT A TASK HERE, will revert the task to Active and nullify the completed day and completion time
 });
 
 app.get("/api/sanitycheck", (req, res) => {
