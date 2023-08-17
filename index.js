@@ -150,7 +150,7 @@ app.get("/api/complete-task/:taskId/:time", async (req, res) => {
     return;
   }
 
-  if(ended.status === "Inactive"){
+  if(endedTask.status === "Inactive"){
     res.sendStatus(400);
     return;
   }
