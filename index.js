@@ -28,6 +28,12 @@ connectToDatabase();
 
 app.post("/api/add-task", async (req, res) => {
   const { title, description, taskType, deadline, estimatedTime } = req.body;
+
+  if(!title || !description || !taskType || !deadline || !estimatedTime){
+    res.sendStatus(400);
+    return;
+  }
+
   const newTask = new Task({
     title: title,
     estimatedTime: estimatedTime,
@@ -46,10 +52,19 @@ app.post("/api/add-task", async (req, res) => {
 });
 
 app.get("/api/get-task/:taskId", async (req, res) => {
-  console.log(req.params.taskId);
   const taskId = req.params.taskId;
+
+  if(!taskId){
+    res.sendStatus(400);
+    return;
+  }
+
   try{  
     const task = await Task.findOne({ _id: taskId });
+    if(task === null){
+      res.sendStatus(400);
+      return;
+    }
     res.send(task);
   } catch (err) {
     console.error("Error:", err);
@@ -72,7 +87,12 @@ app.get("/api/get-inactive-tasks", async (req, res) => {
 app.get("/api/delete-task/:taskId", async (req, res) => {
   const taskId = req.params.taskId;
 
+  if(!taskId) {
+    return res.sendStatus(400);
+  }
+
   const deletedTask = await Task.findOne({ _id: taskId });
+  
   if (deletedTask.status === "Inactive") {
     res.sendStatus(500);
   }
@@ -89,7 +109,18 @@ app.get("/api/delete-task/:taskId", async (req, res) => {
 app.get("/api/edit-task/:taskId", async (req, res) => {
   const taskId = req.params.taskId;
   const newDescription = req.body.description;
+
+  if(!taskId || !newDescription){
+    res.sendStatus(400);
+    return
+  }
+
+
   const editedTask = await Task.findOne({ _id: taskId });
+  if(!editedTask){
+    res.sendStatus(400);
+    return;
+  }
   if (editedTask.status === "Inactive") {
     res.sendStatus(500);
   }
@@ -107,9 +138,21 @@ app.get("/api/complete-task/:taskId/:time", async (req, res) => {
   const taskId = req.params.taskId;
   const time = req.params.time;
 
+  if(!taskId || !time) {
+    res.sendStatus(400);
+    return;
+  }
+
   const endedTask = await Task.findOne({ _id: taskId });
+
+  if(!endedTask){
+    res.sendStatus(400);
+    return;
+  }
+
   if(ended.status === "Inactive"){
-    res.sendStatus(500);
+    res.sendStatus(400);
+    return;
   }
   endedTask.status = 'Inactive';
   endedTask.completionTime = time;
