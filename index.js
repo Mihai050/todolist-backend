@@ -71,8 +71,13 @@ app.get("/api/get-inactive-tasks", async (req, res) => {
 
 app.get("/api/delete-task/:taskId", async (req, res) => {
   const taskId = req.params.taskId;
-  
-  // TODO - DELETE A TASK HERE
+  console.log("Deleting task" + taskId);
+  try {
+    await Task.deleteOne({ _id: taskId });
+    res.sendStatus(200);
+  } catch {
+    res.sendStatus(500);
+  }
 });
 
 app.get("/api/edit-task/:taskId", async (req, res) => {
@@ -89,9 +94,22 @@ app.get("/api/edit-task/:taskId", async (req, res) => {
   }
 });
 
-app.get("/api/complete-task/:taskId", async (req, res) => {
+app.get("/api/complete-task/:taskId/:time", async (req, res) => {
+  console.log('completing task')
   const taskId = req.params.taskId;
-  // TODO - COMPLETE A TASK HERE
+  const time = req.params.time;
+
+  const endedTask = await Task.findOne({ _id: taskId });
+  endedTask.status = 'Inactive';
+  endedTask.completionTime = time;
+  endedTask.finishedAt = new Date();
+
+  try {
+    await endedTask.save();
+    res.sendStatus(200);
+  } catch {
+    res.sendStatus(500);
+  }
 });
 
 app.get("/api/revert-task/:taskId", async (req, res) => {
