@@ -6,12 +6,12 @@ const taskSchema = new mongoose.Schema({
   taskType: String,
   createdAt: {
     type: Date,
-    default: Date.now,
+    default: Date.now,  
   },
   type: String,
   estimatedTime: Number,
   completionTime: {
-    type: String,
+    type: Number,
     default: null,
   },
   status: { 
@@ -21,6 +21,10 @@ const taskSchema = new mongoose.Schema({
     type: Date,
     default: null,
   },
+  finishedAt: {
+    type: Date,
+    default: null,
+  }
 });
 
 module.exports = mongoose.model("Task", taskSchema);

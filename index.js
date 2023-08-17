@@ -105,5 +105,5 @@ app.get("/api/sanitycheck", (req, res) => {
 
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
-  console.log(`localhost:${port}/api/sanitycheck`);
+  console.log(`http://localhost:${port}/api/sanitycheck`);
 });
